@@ -21,7 +21,10 @@ import { AllExceptionsFilter } from './exceptions/exceptions.filter';
   ],
   controllers: [AppController],
   providers: [
-    { provide: APP_FILTER, useClass: AllExceptionsFilter },
+    {
+      provide: APP_FILTER,
+      useClass: AllExceptionsFilter,
+    },
     AppService,
   ],
 })
