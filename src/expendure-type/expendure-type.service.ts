@@ -1,5 +1,6 @@
-import { Injectable } from '@nestjs/common';
+import { CACHE_MANAGER, Inject, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
+import { Cache } from 'cache-manager';
 import { Model } from 'mongoose';
 import { CreateExpendureTypeDto } from './dto/create-expendure-type.dto';
 import { UpdateExpendureTypeDto } from './dto/update-expendure-type.dto';
@@ -13,6 +14,8 @@ export class ExpendureTypeService {
   constructor(
     @InjectModel(ExpendureType.name)
     private readonly expendureTypeModel: Model<ExpendureType>,
+    @Inject(CACHE_MANAGER)
+    private readonly cacheManager: Cache,
   ) {}
   async create(
     createExpendureTypeDto: CreateExpendureTypeDto,
@@ -25,8 +28,20 @@ export class ExpendureTypeService {
   }
 
   async findAll(): Promise<ExpendureTypeDocument[]> {
-    const foundExpendureTypeList = await this.expendureTypeModel.find({});
-    return foundExpendureTypeList;
+    const cachedExpendureTypeList: ExpendureTypeDocument[] =
+      await this.cacheManager.get('Fincon-ExpendureTypeList');
+
+    if (!cachedExpendureTypeList) {
+      const foundExpendureTypeList = await this.expendureTypeModel.find({});
+      await this.cacheManager.set(
+        'Fincon-ExpendureTypeList',
+        foundExpendureTypeList,
+      );
+
+      return foundExpendureTypeList;
+    }
+
+    return cachedExpendureTypeList;
   }
 
   async findOne(id: string): Promise<ExpendureTypeDocument> {
