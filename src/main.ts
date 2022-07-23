@@ -1,6 +1,10 @@
 import { NestFactory } from '@nestjs/core';
 import { ConfigService } from '@nestjs/config';
-import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import {
+  SwaggerModule,
+  DocumentBuilder,
+  SwaggerDocumentOptions,
+} from '@nestjs/swagger';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
@@ -10,8 +14,14 @@ async function bootstrap() {
     .setDescription('')
     .setVersion('1.0')
     .build();
-  const document = SwaggerModule.createDocument(app, config);
+
+  const options: SwaggerDocumentOptions = {
+    operationIdFactory: (controllerKey: string, methodKey: string) => methodKey,
+  };
+
+  const document = SwaggerModule.createDocument(app, config, options);
   SwaggerModule.setup('api', app, document);
+
   const configService = app.get(ConfigService);
   const port = configService.get('PORT');
   await app.listen(3000 || port);
