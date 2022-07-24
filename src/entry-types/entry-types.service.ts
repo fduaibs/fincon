@@ -4,6 +4,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { InjectModel } from '@nestjs/mongoose';
 import { Cache } from 'cache-manager';
 import { Model } from 'mongoose';
@@ -18,23 +19,32 @@ export class EntryTypesService {
     private readonly entryTypeModel: Model<EntryType>,
     @Inject(CACHE_MANAGER)
     private readonly cacheManager: Cache,
+    private readonly configService: ConfigService,
   ) {}
+
+  entryTypeListCacheTag = this.configService.get<string>(
+    'CACHED_ENTRY_TYPE_LIST',
+  );
+
   async create(
     createEntryTypeDto: CreateEntryTypeDto,
   ): Promise<EntryTypeDocument> {
     const createdEntryType = new this.entryTypeModel(createEntryTypeDto);
     const savedEntryType = await createdEntryType.save();
-    await this.cacheManager.del('Fincon-EntryTypeList');
+    await this.cacheManager.del(this.entryTypeListCacheTag);
     return savedEntryType;
   }
 
   async findAll(): Promise<EntryTypeDocument[]> {
     const cachedEntryTypeList: EntryTypeDocument[] =
-      await this.cacheManager.get('Fincon-EntryTypeList');
+      await this.cacheManager.get(this.entryTypeListCacheTag);
 
     if (!cachedEntryTypeList) {
       const foundEntryTypeList = await this.entryTypeModel.find({});
-      await this.cacheManager.set('Fincon-EntryTypeList', foundEntryTypeList);
+      await this.cacheManager.set(
+        this.entryTypeListCacheTag,
+        foundEntryTypeList,
+      );
 
       return foundEntryTypeList;
     }
@@ -44,7 +54,7 @@ export class EntryTypesService {
 
   async findOne(id: string): Promise<EntryTypeDocument> {
     const cachedEntryTypeList: EntryTypeDocument[] =
-      await this.cacheManager.get('Fincon-EntryTypeList');
+      await this.cacheManager.get(this.entryTypeListCacheTag);
 
     if (!cachedEntryTypeList) {
       const foundEntryType = await this.entryTypeModel.findById(id);
@@ -66,7 +76,7 @@ export class EntryTypesService {
       updateEntryTypeDto,
     );
 
-    await this.cacheManager.del('Fincon-EntryTypeList');
+    await this.cacheManager.del(this.entryTypeListCacheTag);
 
     return updatedEntryType;
   }
@@ -76,7 +86,7 @@ export class EntryTypesService {
       _id: id,
     });
 
-    await this.cacheManager.del('Fincon-EntryTypeList');
+    await this.cacheManager.del(this.entryTypeListCacheTag);
 
     return removedEntryType;
   }
