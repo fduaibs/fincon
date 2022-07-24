@@ -1,4 +1,9 @@
-import { CACHE_MANAGER, Inject, Injectable } from '@nestjs/common';
+import {
+  CACHE_MANAGER,
+  Inject,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Cache } from 'cache-manager';
 import { Model } from 'mongoose';
@@ -19,6 +24,7 @@ export class EntryTypesService {
   ): Promise<EntryTypeDocument> {
     const createdEntryType = new this.entryTypeModel(createEntryTypeDto);
     const savedEntryType = await createdEntryType.save();
+    await this.cacheManager.del('Fincon-EntryTypeList');
     return savedEntryType;
   }
 
@@ -37,8 +43,21 @@ export class EntryTypesService {
   }
 
   async findOne(id: string): Promise<EntryTypeDocument> {
-    const foundEntryType = await this.entryTypeModel.findById(id);
-    return foundEntryType;
+    const cachedEntryTypeList: EntryTypeDocument[] =
+      await this.cacheManager.get('Fincon-EntryTypeList');
+
+    if (!cachedEntryTypeList) {
+      const foundEntryType = await this.entryTypeModel.findById(id);
+      return foundEntryType;
+    }
+
+    const entryTypeFound = cachedEntryTypeList.find(
+      (entryType) => entryType._id === id,
+    );
+
+    if (!entryTypeFound) throw new NotFoundException();
+
+    return entryTypeFound;
   }
 
   async update(id: string, updateEntryTypeDto: UpdateEntryTypeDto) {
@@ -47,6 +66,8 @@ export class EntryTypesService {
       updateEntryTypeDto,
     );
 
+    await this.cacheManager.del('Fincon-EntryTypeList');
+
     return updatedEntryType;
   }
 
@@ -54,6 +75,9 @@ export class EntryTypesService {
     const removedEntryType = await this.entryTypeModel.deleteOne({
       _id: id,
     });
+
+    await this.cacheManager.del('Fincon-EntryTypeList');
+
     return removedEntryType;
   }
 }
