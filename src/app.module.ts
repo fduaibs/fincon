@@ -5,7 +5,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AllExceptionsFilter } from './exceptions/exceptions.filter';
-import { ExpendureTypeModule } from './expendure-type/expendure-type.module';
+import { EntryTypesModule } from './entry-types/entry-types.module';
 
 @Module({
   imports: [
@@ -19,7 +19,7 @@ import { ExpendureTypeModule } from './expendure-type/expendure-type.module';
       inject: [ConfigService],
     }),
     CacheModule.register({ isGlobal: true, ttl: 0 }),
-    ExpendureTypeModule,
+    EntryTypesModule,
   ],
   controllers: [AppController],
   providers: [
