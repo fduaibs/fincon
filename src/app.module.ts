@@ -6,6 +6,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AllExceptionsFilter } from './exceptions/exceptions.filter';
 import { EntryTypesModule } from './entry-types/entry-types.module';
+import { EntriesModule } from './entries/entries.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { EntryTypesModule } from './entry-types/entry-types.module';
     }),
     CacheModule.register({ isGlobal: true, ttl: 0 }),
     EntryTypesModule,
+    EntriesModule,
   ],
   controllers: [AppController],
   providers: [
