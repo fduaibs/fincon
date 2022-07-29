@@ -11,7 +11,7 @@ export class Entry {
   type: EntryType;
 
   @Prop()
-  value: string;
+  value: number;
 }
 
-export const EntrySchema = SchemaFactory.createForClass(EntryType);
+export const EntrySchema = SchemaFactory.createForClass(Entry);

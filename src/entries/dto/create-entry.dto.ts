@@ -1,4 +1,4 @@
 export class CreateEntryDto {
   type: string;
-  value: string;
+  value: number;
 }

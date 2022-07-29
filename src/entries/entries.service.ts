@@ -32,24 +32,18 @@ export class EntriesService {
   }
 
   async findAll(): Promise<EntryDocument[]> {
-    try {
-      const cachedEntryList: EntryDocument[] = await this.cacheManager.get(
-        this.entryListCacheTag,
-      );
+    const cachedEntryList: EntryDocument[] = await this.cacheManager.get(
+      this.entryListCacheTag,
+    );
 
-      if (!cachedEntryList) {
-        const foundEntryList = await this.entryModel
-          .find({})
-          .populate('entryType');
-        await this.cacheManager.set(this.entryListCacheTag, foundEntryList);
+    if (!cachedEntryList) {
+      const foundEntryList = await this.entryModel.find({}).populate('type');
+      await this.cacheManager.set(this.entryListCacheTag, foundEntryList);
 
-        return foundEntryList;
-      }
-
-      return cachedEntryList;
-    } catch (error) {
-      console.log(error);
+      return foundEntryList;
     }
+
+    return cachedEntryList;
   }
 
   async findOne(id: string): Promise<EntryDocument> {
