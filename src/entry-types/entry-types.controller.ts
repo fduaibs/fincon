@@ -15,8 +15,8 @@ import { CreateEntryTypeDto } from './dto/create-entry-type.dto';
 import { UpdateEntryTypeDto } from './dto/update-entry-type.dto';
 import { EntryTypeDocument } from './schemas/entry-type.schema';
 
-@Controller('entry-type')
-@ApiTags('Entry Type Controller')
+@Controller('entry-types')
+@ApiTags('Entry Types Controller')
 export class EntryTypesController {
   constructor(private readonly entryTypeService: EntryTypesService) {}
 
@@ -30,13 +30,13 @@ export class EntryTypesController {
 
   @Get()
   @HttpCode(HttpStatus.OK)
-  async findAll() {
+  async findAll(): Promise<EntryTypeDocument[]> {
     return await this.entryTypeService.findAll();
   }
 
   @Get(':id')
   @HttpCode(HttpStatus.OK)
-  async findOne(@Param('id') id: string) {
+  async findOne(@Param('id') id: string): Promise<EntryTypeDocument> {
     return await this.entryTypeService.findOne(id);
   }
 

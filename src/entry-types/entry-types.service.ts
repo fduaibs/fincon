@@ -16,7 +16,7 @@ import { EntryType, EntryTypeDocument } from './schemas/entry-type.schema';
 export class EntryTypesService {
   constructor(
     @InjectModel(EntryType.name)
-    private readonly entryTypeModel: Model<EntryType>,
+    private readonly entryTypeModel: Model<EntryTypeDocument>,
     @Inject(CACHE_MANAGER)
     private readonly cacheManager: Cache,
     private readonly configService: ConfigService,
