@@ -7,6 +7,8 @@ import { AppService } from './app.service';
 import { AllExceptionsFilter } from './exceptions/exceptions.filter';
 import { EntryTypesModule } from './entry-types/entry-types.module';
 import { EntriesModule } from './entries/entries.module';
+import { AuthModule } from './auth/auth.module';
+import { UsersModule } from './users/users.module';
 
 @Module({
   imports: [
@@ -20,6 +22,8 @@ import { EntriesModule } from './entries/entries.module';
       inject: [ConfigService],
     }),
     CacheModule.register({ isGlobal: true, ttl: 0 }),
+    AuthModule,
+    UsersModule,
     EntryTypesModule,
     EntriesModule,
   ],

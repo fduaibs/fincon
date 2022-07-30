@@ -13,6 +13,7 @@ async function bootstrap() {
     .setTitle('Fincon API')
     .setDescription('')
     .setVersion('1.0')
+    .addBearerAuth()
     .build();
 
   const options: SwaggerDocumentOptions = {
